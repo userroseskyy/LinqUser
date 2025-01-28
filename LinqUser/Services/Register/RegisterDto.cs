@@ -8,11 +8,11 @@ namespace LinqUser.Services.Register
     public class RegisterDto
     {
         [Required]
-        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "فقط حروف و فاصله‌ها مجاز هستند.")]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "فقط حروف فارسی، انگلیسی و فاصله‌ها مجاز هستند.")]
         [StringLength(50, MinimumLength = 2)]
         public string FirstName { get; set; }
         [Required]
-        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "فقط حروف و فاصله‌ها مجاز هستند.")]
+        [RegularExpression(@"^[a-zA-Z\u0600-\u06FF\s]+$", ErrorMessage = "فقط حروف فارسی، انگلیسی و فاصله‌ها مجاز هستند.")]
         [StringLength(50, MinimumLength = 2)]
         public string LastName { get; set; }
         [Required]
