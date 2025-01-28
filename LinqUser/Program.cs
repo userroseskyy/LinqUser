@@ -1,10 +1,24 @@
+using LinqUser.Models;
+using LinqUser.Models.Roles;
+using LinqUser.Models.Users;
+using LinqUser.Services.Register;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //AddDataBase
 var ConnectionString = builder.Configuration.GetConnectionString("DefultConnectionString");
-builder.Services
+builder.Services.AddDbContext<DataBaseContext>(Options => Options.UseSqlServer(ConnectionString));
+
+builder.Services.AddIdentity<User, Role>()
+    .AddEntityFrameworkStores<DataBaseContext>()
+    .AddDefaultTokenProviders();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 
 var app = builder.Build();
 

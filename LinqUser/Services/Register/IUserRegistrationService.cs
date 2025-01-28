@@ -1,0 +1,11 @@
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace LinqUser.Services.Register
+{
+    public interface IUserRegistrationService
+    {
+        Task<IdentityResult> RegisterUserAsync(RegisterDto model);
+    }
+
+
+}
