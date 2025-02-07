@@ -1,4 +1,6 @@
-﻿using LinqUser.Services.Register;
+﻿using LinqUser.Models.Users;
+using LinqUser.Services.Login;
+using LinqUser.Services.Register;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,27 +9,34 @@ namespace LinqUser.Controllers
     public class RegisterController : Controller
     {
         private readonly IUserRegistrationService _userRegistrationService;
+        private readonly ILoginService _loginService;
+        private readonly SignInManager<User> _signInManager;
 
-        // تزریق سرویس ثبت‌نام
-        public RegisterController(IUserRegistrationService userRegistrationService)
+
+        public RegisterController(SignInManager<User> signInManager,IUserRegistrationService userRegistrationService, ILoginService loginService)
         {
             _userRegistrationService = userRegistrationService;
+            _loginService=loginService;
+            _signInManager = signInManager;
+
+            
+
         }
 
-        // صفحه اصلی
+    
         public IActionResult Index()
         {
             return View();
         }
 
-        // نمایش فرم ثبت‌نام
+       
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // ثبت‌نام کاربر
+        
         [HttpPost]
         public async Task<IActionResult> Register(RegisterDto model) 
         {
@@ -39,7 +48,7 @@ namespace LinqUser.Controllers
                 if (result.Succeeded)
                 {
                    
-                    return RedirectToAction("Login", "Account");
+                    return RedirectToAction("Login", "Register");
                 }
                 else
                 {
@@ -51,6 +60,33 @@ namespace LinqUser.Controllers
                 }
             }
             return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> Login() 
+        { 
+            return View();
+        } 
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginDto login) 
+        {
+            var result = await _loginService.LoginAsync(login);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home"); 
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "نام کاربری یا رمز عبور اشتباه است.");
+            }
+
+            
+            return View();
+        }
+        [HttpGet]
+        public async Task<ActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
         }
     }
 }

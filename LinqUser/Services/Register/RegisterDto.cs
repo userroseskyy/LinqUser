@@ -26,6 +26,7 @@ namespace LinqUser.Services.Register
         [Required]
         [Compare("Password", ErrorMessage = "پسورد و تایید پسورد باید یکسان باشند.")]
         public string ConfirmPassword { get; set; }
+     
 
 
     }

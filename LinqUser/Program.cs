@@ -1,7 +1,9 @@
 using LinqUser.Models;
 using LinqUser.Models.Roles;
 using LinqUser.Models.Users;
+using LinqUser.Services.Login;
 using LinqUser.Services.Register;
+using LinqUser.Services.UserProfile;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +21,8 @@ builder.Services.AddIdentity<User, Role>()
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 
 var app = builder.Build();
 
@@ -32,15 +36,21 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+
+    
 
 app.Run();

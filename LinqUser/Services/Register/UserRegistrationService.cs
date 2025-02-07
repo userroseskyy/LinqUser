@@ -11,7 +11,11 @@ namespace LinqUser.Services.Register
             _userManager=userManager;
         }
 
-
+        public Task<string> GenerateUniqueSlug(string FirstName)
+        {
+            string slug=FirstName .ToLower().Replace(" ","_")+ "-"+Guid.NewGuid().ToString("N").Substring(0,8);
+            return Task.FromResult(slug); ;
+        }
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterDto model)
         {
@@ -20,14 +24,18 @@ namespace LinqUser.Services.Register
                 UserName = model.Email,
                 Email = model.Email,
                 FirstName = model.FirstName,
-                LastName = model.LastName
+                LastName = model.LastName,
+              ProfileSlug =await GenerateUniqueSlug(model.FirstName),
             };
-
            
+
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             return result;
         }
+
+       
     }
 
 
