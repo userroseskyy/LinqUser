@@ -12,13 +12,8 @@ namespace LinqUser.Services.Register
             _userManager=userManager;
             _httpContextAccessor=httpContextAccessor;
         }
-        //ساخت Url برای هر کاربر
-        public async Task<string> GenerateUniqueSlug(string FirstName)
-        {
-            string baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}/profiles/UserProfile/";
-            string slug=FirstName .ToLower().Replace(" ","_")+ "-"+Guid.NewGuid().ToString("N").Substring(0,8);
-            return baseUrl+ slug;
-        }
+        
+     
 
         public async Task<IdentityResult> RegisterUserAsync(RegisterDto model)
         {
@@ -28,7 +23,7 @@ namespace LinqUser.Services.Register
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-              ProfileSlug =await GenerateUniqueSlug(model.FirstName),
+              
             };
            
 

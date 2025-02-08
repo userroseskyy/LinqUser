@@ -3,7 +3,7 @@ using LinqUser.Models.Roles;
 using LinqUser.Models.Users;
 using LinqUser.Services.Login;
 using LinqUser.Services.Register;
-using LinqUser.Services.UserProfile;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +22,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<IUserProfileService, UserProfileService>();
+
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using LinqUser.Models.Roles;
+﻿using LinqUser.Areas.Profile.Models;
+using LinqUser.Models.Roles;
 using LinqUser.Models.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -12,6 +13,8 @@ namespace LinqUser.Models
         {
 
         }
+        DbSet<ProfileUser> profileUsers { get; set; }
+        DbSet<SocialLink>  socialLinks { get; set; }
          
 
     }
