@@ -13,8 +13,8 @@ namespace LinqUser.Models
         {
 
         }
-        DbSet<ProfileUser> profileUsers { get; set; }
-        DbSet<SocialLink>  socialLinks { get; set; }
+       public DbSet<ProfileUser> profileUsers { get; set; }
+       public DbSet<SocialLink>  socialLinks { get; set; }
          
 
     }
