@@ -3,15 +3,12 @@
 @{
     ViewData["Title"] = "CreateProfile";
 }
-
-<h1>CreateProfile</h1>
-
-<h4>CreateProfileDto</h4>
-<hr />
+<div asp-validation-summary="All" class="text-danger"></div>
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateProfile">
+        <form asp-action="CreateProfile" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -32,6 +29,18 @@
                 <input asp-for="ProfileImageUrl" class="form-control" />
                 <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
             </div>
+
+            <div class="form-group">
+                <label>لینک‌های اجتماعی</label>
+                <div id="socialLinksContainer">
+                    <div class="input-group mb-2">
+                        <input type="text" name="SocialLinks[0].PlatformName" placeholder="نام پلتفرم (مثلاً: Instagram)" class="form-control">
+                        <input type="text" name="SocialLinks[0].Url" placeholder="آدرس لینک" class="form-control">
+                        <button type="button" class="btn btn-success" onclick="addSocialLink()">+</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -39,10 +48,41 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script>
+    var linkIndex = 1; // شمارنده برای نام‌های فیلد
+
+    function addSocialLink() {
+        var container = document.getElementById("socialLinksContainer");
+
+        var div = document.createElement("div");
+        div.classList.add("input-group", "mb-2");
+
+        var platformInput = document.createElement("input");
+        platformInput.type = "text";
+        platformInput.name = `SocialLinks[${linkIndex}].PlatformName`;
+        platformInput.placeholder = "نام پلتفرم (مثلاً: Twitter)";
+        platformInput.classList.add("form-control");
+
+        var urlInput = document.createElement("input");
+        urlInput.type = "text";
+        urlInput.name = `SocialLinks[${linkIndex}].Url`;
+        urlInput.placeholder = "آدرس لینک";
+        urlInput.classList.add("form-control");
+
+        var removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.innerText = "❌";
+        removeBtn.classList.add("btn", "btn-danger");
+        removeBtn.onclick = function () { container.removeChild(div); };
+
+        div.appendChild(platformInput);
+        div.appendChild(urlInput);
+        div.appendChild(removeBtn);
+        container.appendChild(div);
+
+        linkIndex++; // افزایش شمارنده برای ورودی‌های بعدی
+    }
+</script>

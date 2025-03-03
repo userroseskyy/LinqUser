@@ -58,10 +58,14 @@ namespace LinqUser.Areas.Profile.Controllers
             await _createProfileUserService.CreateProfile(createProfileDto,User);
 
             return RedirectToAction("index");
-        }[HttpGet]
-        public async Task<IActionResult> EditeProfile() 
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditeProfile()
         {
+
+
             
+
             return View();
         }
         [HttpPost]
@@ -69,10 +73,11 @@ namespace LinqUser.Areas.Profile.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return BadRequest(new { errors });
             }
             await _editeProfileUserService.EditeProfileUser(editeProfileUserDto,User);
-            return RedirectToAction();
+            return RedirectToAction("Index");
         }
 
 

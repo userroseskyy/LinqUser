@@ -15,7 +15,7 @@ namespace LinqUser.Areas.Profile.Models
     }
     public class SocialLink
     {
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
         public string UserProfileId { get; set; }
         public string PlatformName { get; set; }
         public string Url { get; set; }

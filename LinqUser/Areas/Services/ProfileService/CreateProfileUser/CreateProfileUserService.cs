@@ -20,11 +20,17 @@ namespace LinqUser.Areas.Services.ProfileService.CreateProfileUser
         public async Task CreateProfile(CreateProfileDto createProfileDto, ClaimsPrincipal userClaims)
         {
             var userId=userClaims.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user=await _userManager.FindByIdAsync(userId);
-
-            if (userId != null) 
+            if (userId == null)
             {
-                ProfileUser profileUser = new ProfileUser()
+                throw new Exception("کاربر یافت نشد!");
+            }
+            var user=await _userManager.FindByIdAsync(userId);
+            var existingProfile = _context.profileUsers.FirstOrDefault(p=> p.UserId==userId);
+            if (existingProfile != null)
+            {
+                throw new InvalidOperationException("شما قبلاً یک پروفایل ثبت کرده‌اید و امکان ثبت پروفایل جدید ندارید!");
+            }
+            ProfileUser profileUser = new ProfileUser()
                 {
                     FirstName=createProfileDto.FirstName,
                     LastName=createProfileDto.LastName,
@@ -34,17 +40,18 @@ namespace LinqUser.Areas.Services.ProfileService.CreateProfileUser
                     SocialLinks=createProfileDto.SocialLinks.Select(p=> 
                     new SocialLink
                     {
-                        PlatformName=p.PlatformName,
-                        Url=p.Url,
+                       PlatformName=p.PlatformName,
+                       Url=p.Url,
                         
                     }).ToList(),
 
                 };
                 _context.profileUsers.Add(profileUser);
                 await _context.SaveChangesAsync();
-            }
+         
 
            
+
         }
     }
 
