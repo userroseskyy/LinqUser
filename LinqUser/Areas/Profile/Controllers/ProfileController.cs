@@ -45,37 +45,42 @@ namespace LinqUser.Areas.Profile.Controllers
         [HttpGet]
         public async Task<IActionResult> CreateProfile() 
         {
-            
+         
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> CreateProfile(CreateProfileDto createProfileDto) 
         {
-            if (!ModelState.IsValid) 
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return View(createProfileDto);
+                }
+                await _createProfileUserService.CreateProfile(createProfileDto, User);
+
+                return RedirectToAction("index");
+            }
+            catch (Exception ex)
+            {
+
+                ModelState.AddModelError("", ex.Message);
                 return View(createProfileDto);
             }
-            await _createProfileUserService.CreateProfile(createProfileDto,User);
-
-            return RedirectToAction("index");
+            
+           
         }
         [HttpGet]
         public async Task<IActionResult> EditeProfile()
         {
+            var profileDto =await  _editeProfileUserService.GetProfileForEdit(User);
 
-
-            
-
-            return View();
+            return View(profileDto);
         }
         [HttpPost]
         public async Task<IActionResult> EditeProfile(EditeProfileUserDto editeProfileUserDto) 
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                return BadRequest(new { errors });
-            }
+           
             await _editeProfileUserService.EditeProfileUser(editeProfileUserDto,User);
             return RedirectToAction("Index");
         }

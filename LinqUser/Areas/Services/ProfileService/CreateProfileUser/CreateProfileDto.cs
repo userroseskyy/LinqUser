@@ -17,8 +17,8 @@ namespace LinqUser.Areas.Services.ProfileService.CreateProfileUser
             [StringLength(500)]
             public string Bio { get; set; }
 
-            [Url]
-            public string ProfileImageUrl { get; set; }
+           
+            public IFormFile? ProfileImageUrl { get; set; }
 
             public List<SocialLinkDto> SocialLinks { get; set; } = new List<SocialLinkDto>();
        

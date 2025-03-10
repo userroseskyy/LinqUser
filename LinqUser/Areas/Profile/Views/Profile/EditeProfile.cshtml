@@ -12,46 +12,53 @@
     <div class="col-md-4">
         <form asp-action="EditeProfile">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Bio" class="control-label"></label>
                 <input asp-for="Bio" class="form-control" />
                 <span asp-validation-for="Bio" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="ProfileImageUrl" class="control-label"></label>
                 <input asp-for="ProfileImageUrl" class="form-control" />
                 <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label>لینک‌های اجتماعی</label>
+                <label>لینک‌ها</label>
                 <div id="socialLinksContainer">
-                    @for (var i = 0; i < Model.SocialLinks.Count; i++)
+                    @if (Model.SocialLinks != null && Model.SocialLinks.Any())
                     {
-                        <div class="input-group mb-2">
-                            <input type="text" name="SocialLinks[@i].PlatformName" value="@Model.SocialLinks[i].PlatformName" placeholder="نام پلتفرم" class="form-control">
-                            <input type="text" name="SocialLinks[@i].Url" value="@Model.SocialLinks[i].Url" placeholder="آدرس لینک" class="form-control">
-                            <button type="button" class="btn btn-danger" onclick="removeSocialLink(this)">❌</button>
-                        </div>
+                        for (int i = 0; i < Model.SocialLinks.Count; i++)
+                        {
+                            <div class="input-group mb-2 social-link-item">
+                                <input type="text" name="SocialLinks[@i].PlatformName" value="@Model.SocialLinks[i].PlatformName" placeholder="نام پلتفرم" class="form-control platform-name" />
+                                <input type="text" name="SocialLinks[@i].Url" value="@Model.SocialLinks[i].Url" placeholder="لینک" class="form-control url" />
+                                <button type="button" class="btn btn-danger remove-link">-</button>
+                            </div>
+                        }
                     }
                 </div>
-                <button type="button" class="btn btn-success mt-2" onclick="addSocialLink()">افزودن لینک</button>
+                <button type="button" class="btn btn-success mt-2" onclick="addSocialLink()">افزودن لینک جدید</button>
             </div>
 
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
-   
     </div>
 </div>
 
@@ -60,71 +67,40 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
 <script>
-    var linkIndex = @Model.SocialLinks.Count;
+    let linkIndex = @Model.SocialLinks?.Count ?? 0;
 
     function addSocialLink() {
-        var container = document.getElementById("socialLinksContainer");
-
-        var div = document.createElement("div");
-        div.classList.add("input-group", "mb-2");
-
-        var platformInput = document.createElement("input");
-        platformInput.type = "text";
-        platformInput.name = `SocialLinks[${linkIndex}].PlatformName`;
-        platformInput.placeholder = "نام پلتفرم";
-        platformInput.classList.add("form-control");
-
-        var urlInput = document.createElement("input");
-        urlInput.type = "text";
-        urlInput.name = `SocialLinks[${linkIndex}].Url`;
-        urlInput.placeholder = "آدرس لینک";
-        urlInput.classList.add("form-control");
-
-        var removeBtn = document.createElement("button");
-        removeBtn.type = "button";
-        removeBtn.innerText = "❌";
-        removeBtn.classList.add("btn", "btn-danger");
-        removeBtn.onclick = function () { container.removeChild(div); };
-
-        div.appendChild(platformInput);
-        div.appendChild(urlInput);
-        div.appendChild(removeBtn);
-        container.appendChild(div);
-
+        let container = document.getElementById("socialLinksContainer");
+        let newLink = document.createElement("div");
+        newLink.classList.add("input-group", "mb-2", "social-link-item");
+        newLink.innerHTML = `
+            <input type="text" name="SocialLinks[${linkIndex}].PlatformName" placeholder="نام پلتفرم" class="form-control platform-name" />
+            <input type="text" name="SocialLinks[${linkIndex}].Url" placeholder="آدرس لینک" class="form-control url" />
+            <button type="button" class="btn btn-danger remove-link">-</button>
+        `;
+        container.appendChild(newLink);
         linkIndex++;
     }
-</script>
-3️⃣ اطمینان از مقداردهی SocialLinks در EditeProfileUserDto
-مطمئن شو که در EditeProfileUserDto مقدار SocialLinks خالی نباشد، مثلاً در EditeProfileUserService مقداردهی اولیه را انجام بدهی:
 
-csharp
-Copy
-Edit
-public async Task<EditeProfileUserDto>
-    GetProfileForEdit(ClaimsPrincipal userClaims)
-    {
-    var userId = userClaims.FindFirstValue(ClaimTypes.NameIdentifier);
-    var profile = await _context.profileUsers
-    .Include(p => p.SocialLinks)
-    .FirstOrDefaultAsync(p => p.UserId == userId);
-
-    if (profile == null)
-    return new EditeProfileUserDto { SocialLinks = new List<SocialLinkDto>
-        () };
-
-        return new EditeProfileUserDto
-        {
-        FirstName = profile.FirstName,
-        LastName = profile.LastName,
-        Bio = profile.Bio,
-        ProfileImageUrl = profile.ProfileImageUrl,
-        SocialLinks = profile.SocialLinks.Select(s => new SocialLinkDto
-        {
-        PlatformName = s.PlatformName,
-        Url = s.Url
-        }).ToList()
-        };
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-link")) {
+            event.target.closest(".social-link-item").remove();
+            updateIndexes();
         }
+    });
+
+    function updateIndexes() {
+        let links = document.querySelectorAll(".social-link-item");
+        links.forEach((link, index) => {
+            link.querySelector(".platform-name").setAttribute("name", `SocialLinks[${index}].PlatformName`);
+            link.querySelector(".url").setAttribute("name", `SocialLinks[${index}].Url`);
+        });
+        linkIndex = links.length;
+    }
+</script>
