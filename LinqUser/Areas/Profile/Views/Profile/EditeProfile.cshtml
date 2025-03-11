@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="EditeProfile">
+        <form asp-action="EditeProfile" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
@@ -32,8 +32,11 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="ProfileImageUrl" class="control-label"></label>
-                <input asp-for="ProfileImageUrl" class="form-control" />
+                <label for="ProfileImageUrl" class="control-label">تصویر پروفایل</label>
+                <div>
+                    <img id="profileImagePreview" src="@Model.ProfileImageUrl" alt="Profile Image" class="img-thumbnail" style="width: 100px; height: 100px; cursor: pointer;" onclick="document.getElementById('ProfileImageInput').click();" />
+                    <input type="file" id="ProfileImageInput" name="ProfileImage" style="display: none;" onchange="previewImage(event)" />
+                </div>
                 <span asp-validation-for="ProfileImageUrl" class="text-danger"></span>
             </div>
 
@@ -44,11 +47,11 @@
                     {
                         for (int i = 0; i < Model.SocialLinks.Count; i++)
                         {
-                            <div class="input-group mb-2 social-link-item">
-                                <input type="text" name="SocialLinks[@i].PlatformName" value="@Model.SocialLinks[i].PlatformName" placeholder="نام پلتفرم" class="form-control platform-name" />
-                                <input type="text" name="SocialLinks[@i].Url" value="@Model.SocialLinks[i].Url" placeholder="لینک" class="form-control url" />
-                                <button type="button" class="btn btn-danger remove-link">-</button>
-                            </div>
+                                    <div class="input-group mb-2 social-link-item">
+                                        <input type="text" name="SocialLinks[@i].PlatformName" value="@Model.SocialLinks[i].PlatformName" placeholder="نام پلتفرم" class="form-control platform-name" />
+                                        <input type="text" name="SocialLinks[@i].Url" value="@Model.SocialLinks[i].Url" placeholder="لینک" class="form-control url" />
+                                        <button type="button" class="btn btn-danger remove-link">-</button>
+                                    </div>
                         }
                     }
                 </div>
@@ -102,5 +105,18 @@
             link.querySelector(".url").setAttribute("name", `SocialLinks[${index}].Url`);
         });
         linkIndex = links.length;
+    }
+
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            document.getElementById('profileImagePreview').src = e.target.result;
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
     }
 </script>

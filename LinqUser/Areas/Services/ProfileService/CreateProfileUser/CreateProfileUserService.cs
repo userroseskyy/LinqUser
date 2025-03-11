@@ -23,7 +23,7 @@ namespace LinqUser.Areas.Services.ProfileService.CreateProfileUser
 
         public async Task CreateProfile(CreateProfileDto createProfileDto, ClaimsPrincipal userClaims)
         {
-            var userId=userClaims.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = userClaims.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
                 throw new Exception("کاربر یافت نشد!");
@@ -34,44 +34,51 @@ namespace LinqUser.Areas.Services.ProfileService.CreateProfileUser
             {
                 throw new Exception("شما قبلاً یک پروفایل ثبت کرده‌اید!");
             }
-            var directoryPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "profiles");
-            if (!Directory.Exists(directoryPath)) 
+
+            string profileImageUrl = null; // مقدار پیش‌فرض برای تصویر
+
+            if (createProfileDto.ProfileImageUrl != null)
             {
-                Directory.CreateDirectory(directoryPath);
-            }
-            var filePath = Path.Combine(directoryPath, createProfileDto.ProfileImageUrl.FileName);
+                var directoryPath = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "profiles");
 
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await createProfileDto.ProfileImageUrl.CopyToAsync(stream);
-            }
-
-            string profileImageUrl = "/images/profiles/" + createProfileDto.ProfileImageUrl.FileName;
-
-            ProfileUser profileUser = new ProfileUser()
+                // اگر پوشه وجود نداشت، ایجاد شود
+                if (!Directory.Exists(directoryPath))
                 {
-                    FirstName=createProfileDto.FirstName,
-                    LastName=createProfileDto.LastName,
-                    Bio=createProfileDto.Bio,
-                    UserId=userId,
-                ProfileImageUrl=profileImageUrl,
-                SocialLinks=createProfileDto.SocialLinks.Select(p=> 
-                    new SocialLink
-                    {
-                       PlatformName=p.PlatformName,
-                       Url=p.Url,
-                        
-                    }).ToList(),
+                    Directory.CreateDirectory(directoryPath);
+                }
 
-                };
-           
-                _context.profileUsers.Add(profileUser);
-                await _context.SaveChangesAsync();
-         
+                // تولید نام یکتا برای فایل
+                var uniqueFileName = $"{userId}_{Path.GetExtension(createProfileDto.ProfileImageUrl.FileName)}";
+                var filePath = Path.Combine(directoryPath, uniqueFileName);
 
-           
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await createProfileDto.ProfileImageUrl.CopyToAsync(stream);
+                }
 
+                // ذخیره مسیر تصویر در دیتابیس
+                profileImageUrl = $"/Images/profiles/{uniqueFileName}";
+            }
+
+            // ایجاد پروفایل جدید در دیتابیس
+            ProfileUser profileUser = new ProfileUser()
+            {
+                FirstName = createProfileDto.FirstName,
+                LastName = createProfileDto.LastName,
+                Bio = createProfileDto.Bio,
+                UserId = userId,
+                ProfileImageUrl = profileImageUrl, // مقدار تصویر را تنظیم کن
+                SocialLinks = createProfileDto.SocialLinks.Select(p => new SocialLink
+                {
+                    PlatformName = p.PlatformName,
+                    Url = p.Url,
+                }).ToList(),
+            };
+
+            _context.profileUsers.Add(profileUser);
+            await _context.SaveChangesAsync();
         }
+
     }
 
 
