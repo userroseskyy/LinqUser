@@ -1,7 +1,8 @@
-using LinqUser.Areas.Services.ProfileService.AddUserProfile;
-using LinqUser.Areas.Services.ProfileService.CreateProfileUser;
-using LinqUser.Areas.Services.ProfileService.EditeProfileUser;
-using LinqUser.Areas.Services.ProfileService.UserProfile;
+using LinqUser.Areas.Profile.Service.ProfileService.CreateProfileUserService;
+using LinqUser.Areas.Profile.Service.ProfileService.EditeProfile;
+using LinqUser.Areas.Profile.Service.ProfileService.GetProfile;
+using LinqUser.Areas.Profile.Service.ProfileService.UserLinks.CreateLinks;
+using LinqUser.Areas.Profile.Service.ProfileService.UserLinks.GetLinks;
 using LinqUser.Models;
 using LinqUser.Models.Roles;
 using LinqUser.Models.Users;
@@ -26,9 +27,13 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
-builder.Services.AddScoped<IUserProfileService, UserPofileService>();
-builder.Services.AddScoped<ICreateProfileUserService,  CreateProfileUserService>();
-builder.Services.AddScoped<IEditeProfileUserService, EditeProfileUserService>();
+builder.Services.AddScoped<IGetProfileUserService, GetProfileUserService>();
+builder.Services.AddScoped<ICreateProfileUserService, CreateProfileUserService>();
+builder.Services.AddScoped<IEditProfileUserService, EditProfileUserService>();
+builder.Services.AddScoped<ICreateUserLinkService, CreateUserLinkService>();
+builder.Services.AddScoped<IUserLinkService, UserLinkService>();
+
+
 
 
 var app = builder.Build();

@@ -1,0 +1,46 @@
+﻿@model LinqUser.Areas.Profile.Service.ProfileService.GetProfile.ProfileUserDto
+
+@{
+    ViewData["Title"] = "GetProfile";
+}
+
+<h1>پروفایل کاربر</h1>
+
+<div>
+  
+    <hr />
+    <div >
+    @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+    {
+        <img src="@Model.ProfileImageUrl" alt="تصویر پروفایل"
+             width="120"
+             height="120"
+             style="object-fit: contain; border-radius: 50%;" />
+    }
+    else
+    {
+        <p>تصویری موجود نیست.</p>
+    }
+    </div>
+    <dl class="row">
+        
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FullName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FullName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Bio)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Bio)
+        </dd>
+        
+       
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "EditeProfile", new { id = Model.Id }) |
+    <a asp-action="Index">Back to List</a>
+</div>
